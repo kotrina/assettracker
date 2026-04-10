@@ -6,11 +6,11 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient() {
-  // DATABASE_URL for production (Turso/libSQL remote URL)
-  // For local dev: set DATABASE_URL=file:./prisma/dev.db in .env
   const url = process.env.DATABASE_URL ?? "file:./prisma/dev.db";
+  // TURSO_AUTH_TOKEN is only needed for remote Turso databases
+  const authToken = process.env.TURSO_AUTH_TOKEN;
 
-  const adapter = new PrismaLibSql({ url });
+  const adapter = new PrismaLibSql({ url, ...(authToken ? { authToken } : {}) });
   return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === "development" ? ["error"] : [],
